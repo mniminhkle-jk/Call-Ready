@@ -22,14 +22,15 @@ export default function ContactPanel({ contact: c }) {
   return (
     <>
       <section className="card stack">
-        <div className="card-head" style={{ marginBottom: 0 }}><h2>Contact</h2><button className="btn ghost" onClick={() => setEdit(v => !v)}>{edit ? "Cancel" : "Edit"}</button></div>
+        <div className="card-head" style={{ marginBottom: 0 }}><h2>Contact information</h2><button className="btn ghost" onClick={() => setEdit(v => !v)}>{edit ? "Cancel" : "Edit"}</button></div>
         {msg && <div className="notice small">{msg}</div>}
         {!edit ? <div className="stack small">
-          <div><span className="muted">Email</span><br />{c.email ? <span className="row" style={{ gap: 6 }}><span className="mono">{c.email}</span><CopyButton text={c.email} label="Copy" className="btn ghost" /></span> : <span className="muted">Not on file. Add from CRM.</span>}</div>
-          <div><span className="muted">Phone</span><br />{c.phone ? <span className="row" style={{ gap: 6 }}><span className="mono">{c.phone}</span><CopyButton text={c.phone} label="Copy" className="btn ghost" /></span> : <span className="muted">Not on file. Add from CRM.</span>}</div>
+          {(c.phones || []).map((p, i) => <div key={i}><span className="muted">{p.label}</span><br /><span className="row" style={{ gap: 6 }}><span className="mono">{p.number}</span><CopyButton text={p.number} label="Copy" className="btn ghost" /><a className="src" href={p.src} target="_blank" rel="noreferrer">[source]</a></span></div>)}
+          <div><span className="muted">Direct line</span><br />{c.phone ? <span className="row" style={{ gap: 6 }}><span className="mono">{c.phone}</span><CopyButton text={c.phone} label="Copy" className="btn ghost" /></span> : <span className="muted">Not on file. Syncs from Salesforce or HubSpot, or add it here.</span>}</div>
+          <div><span className="muted">Business email</span><br />{c.email ? <span className="row" style={{ gap: 6 }}><span className="mono">{c.email}</span><CopyButton text={c.email} label="Copy" className="btn ghost" /></span> : <span className="muted">Not on file. Syncs from Salesforce or HubSpot, or add it here.</span>}</div>
           <div><span className="muted">LinkedIn</span><br />{c.linkedin_url ? <a href={c.linkedin_url} target="_blank" rel="noreferrer">Open profile</a> : <a href={liSearch} target="_blank" rel="noreferrer">Search LinkedIn for this role</a>}</div>
-          <div><span className="pill">{SRC[c.contact_source] || "Rep entered"}</span></div>
-          <p className="muted" style={{ margin: 0 }}>Only business contact info from public pages or your CRM. No scraped personal emails or cell numbers.</p>
+          <div className="row" style={{ gap: 6 }}><span className="pill">{SRC[c.contact_source] || "Rep entered"}</span><span className="pill">SF {c.sf_id || "not synced"}</span><span className="pill">HS {c.hubspot_id || "not synced"}</span></div>
+          <p className="muted" style={{ margin: 0 }}>Company lines come from public sources. Direct lines and emails come only from your CRM. Personal numbers and emails are never stored.</p>
         </div> :
         <form className="stack" onSubmit={save}>
           <div><label htmlFor="e-name">Name</label><input id="e-name" type="text" value={f.name} onChange={set("name")} /></div>

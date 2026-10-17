@@ -1,24 +1,18 @@
-import { db, logActivity, touchAccount } from "@/lib/db";
+import { db, logActivity, touchAccount, touchContact } from "@/lib/db";
 import { handle, json, fail, requireUser } from "@/lib/apiutil";
 export const POST = handle(async req => {
   const user = await requireUser();
   const b = await req.json();
   if (!b.account_id || !b.prn?.purpose?.trim()) return fail("Every note needs a Purpose (the P in PRN).");
   const sb = db();
-  const row = { account_id: b.account_id, contact_id: b.contact_id || null, author: user.name, kind: b.kind || "call", method: b.method || null, prn: b.prn, granola_id: b.granola_id || null };
-  const { error } = await sb.from("notes").insert(row);
-  if (error) {
-    if (/duplicate key/.test(error.message)) return fail("That Granola meeting was already saved as a note.", 409);
-    throw error;
-  }
+  const { error } = await sb.from("notes").insert({ account_id: b.account_id, contact_id: b.contact_id || null, author: user.name, kind: b.kind || "call", method: b.method || null, prn: b.prn, granola_id: b.granola_id || null });
+  if (error) { if (/duplicate key/.test(error.message)) return fail("That Granola meeting was already saved as a note.", 409); throw error; }
   await touchAccount(b.account_id);
+  await touchContact(b.contact_id);
   if (b.stage) {
     const { data: a } = await sb.from("accounts").select("stage").eq("id", b.account_id).single();
-    if (a && a.stage !== b.stage) {
-      await sb.from("accounts").update({ stage: b.stage }).eq("id", b.account_id);
-      await logActivity(b.account_id, user.name, "Changed stage", `${a.stage} → ${b.stage}`);
-    }
+    if (a && a.stage !== b.stage) { await sb.from("accounts").update({ stage: b.stage }).eq("id", b.account_id); await logActivity(b.account_id, user.name, "Changed stage", `${a.stage} → ${b.stage}`, b.contact_id); }
   }
-  await logActivity(b.account_id, user.name, b.kind === "granola" ? "Saved Granola meeting as PRN note" : "Logged call notes", b.prn.purpose);
+  await logActivity(b.account_id, user.name, b.kind === "granola" ? "Saved Granola meeting as PRN note" : "Logged call notes", b.prn.purpose, b.contact_id);
   return json({ ok: true });
 });

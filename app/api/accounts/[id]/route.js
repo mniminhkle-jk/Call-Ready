@@ -1,7 +1,6 @@
 import { db, logActivity } from "@/lib/db";
 import { handle, json, fail, requireUser } from "@/lib/apiutil";
 
-const SECTIONS = ["ships", "where", "when", "who"];
 
 export const PATCH = handle(async (req, { params }) => {
   const user = await requireUser();
@@ -23,29 +22,19 @@ export const PATCH = handle(async (req, { params }) => {
     return json({ ok: true });
   }
 
-  // Brief edits: snapshot the old version first so history is never lost.
+  // Company profile edits: add a fact found (with source). Snapshot the old version first.
   const brief = structuredClone(a.brief || {});
   let detail = "";
-  if (body.sharpest) {
-    if (!body.sharpest.text?.trim()) return fail("The Sharpest Signal can't be empty.");
-    brief.sharpest = { ...(brief.sharpest || {}), text: body.sharpest.text.trim(), why: (body.sharpest.why || "").trim() };
-    detail = "Updated Sharpest Signal";
-  } else if (body.addLine) {
-    const { section, text, tag, url, title } = body.addLine;
-    if (!text?.trim()) return fail("Write the line first.");
-    let src;
-    if (tag === "verified") {
-      if (!/^https?:\/\//.test(url || "")) return fail("A verified line needs a source URL starting with http.");
-      brief.sources = brief.sources || [];
-      const existing = brief.sources.find(s => s.url === url);
-      src = existing ? existing.n : (Math.max(0, ...brief.sources.map(s => s.n)) + 1);
-      if (!existing) brief.sources.push({ n: src, title: title || url, url, date: now.slice(0, 10) });
-    }
-    const line = { text: text.trim(), tag: tag === "verified" ? "verified" : "inferred", ...(src ? { src } : {}), by: user.name, at: now };
-    if (section === "company") brief.company = [...(brief.company || []), line];
-    else if (SECTIONS.includes(section)) { brief.freight = brief.freight || {}; brief.freight[section] = [...(brief.freight[section] || []), line]; }
-    else return fail("Unknown section.");
-    detail = `Added ${line.tag} line to ${section}`;
+  if (body.addFact) {
+    const { label, text, url, title } = body.addFact;
+    if (!text?.trim()) return fail("Write the fact first.");
+    if (!/^https?:\/\//.test(url || "")) return fail("Company facts need a source URL. Guesses belong in a person brief as inferred lines.");
+    brief.sources = brief.sources || [];
+    const ex = brief.sources.find(s => s.url === url);
+    const src = ex ? ex.n : Math.max(0, ...brief.sources.map(s => s.n)) + 1;
+    if (!ex) brief.sources.push({ n: src, title: title || url, url, date: now.slice(0, 10) });
+    brief.facts = [...(brief.facts || []), { label: (label || "Fact").trim(), text: text.trim(), src, by: user.name, at: now }];
+    detail = `Added fact: ${label || "Fact"}`;
   } else return fail("Nothing to update.");
 
   await sb.from("brief_history").insert({ account_id: a.id, brief: a.brief, saved_by: user.name, reason: `Before: ${detail}` });

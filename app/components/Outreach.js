@@ -16,8 +16,8 @@ export default function Outreach({ account, contact, options, drafts, li }) {
   const [liText, setLiText] = useState("");
   const [msg, setMsg] = useState("");
 
-  function openEmail() { setBody(d.body); setSubject(d.subject); setMode("email"); setMsg(""); api("/api/activity", "POST", { account_id: account.id, kind: "email-drafted", detail: contact.name || contact.title }).catch(() => {}); }
-  function openLi() { setLiText(l.text); setMode("linkedin"); setMsg(""); api("/api/activity", "POST", { account_id: account.id, kind: "linkedin-drafted", detail: contact.name || contact.title }).catch(() => {}); }
+  function openEmail() { setBody(d.body); setSubject(d.subject); setMode("email"); setMsg(""); api("/api/activity", "POST", { account_id: account.id, contact_id: contact.id, kind: "email-drafted", detail: contact.name || contact.title }).catch(() => {}); }
+  function openLi() { setLiText(l.text); setMode("linkedin"); setMsg(""); api("/api/activity", "POST", { account_id: account.id, contact_id: contact.id, kind: "linkedin-drafted", detail: contact.name || contact.title }).catch(() => {}); }
   function regen(next) {
     const key = `${next.connectId ?? connectId}|${next.driver ?? driver}|${next.ask ?? ask}`;
     if (next.connectId) setConnectId(next.connectId);
@@ -27,7 +27,7 @@ export default function Outreach({ account, contact, options, drafts, li }) {
     if (mode === "linkedin" && next.connectId) setLiText(li[next.connectId].text);
   }
   async function markSent(kind) {
-    await api("/api/activity", "POST", { account_id: account.id, kind, detail: contact.name || contact.title });
+    await api("/api/activity", "POST", { account_id: account.id, contact_id: contact.id, kind, detail: contact.name || contact.title });
     setMsg("Logged as sent. Last-touched date updated."); setTimeout(() => setMode(null), 900);
   }
   const mailto = `mailto:${contact.email || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;

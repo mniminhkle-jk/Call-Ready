@@ -52,7 +52,7 @@ export default function MockCall({ accountId, contactId, goals, difficulty, chec
   }
   async function scorePaste() {
     setErr("");
-    try { const r = await api("/api/mock/score", "POST", { account_id: accountId, transcript: paste }); setResult(r); setPhase("done"); }
+    try { const r = await api("/api/mock/score", "POST", { account_id: accountId, contact_id: contactId, transcript: paste }); setResult(r); setPhase("done"); }
     catch (e) { setErr(e.message); }
   }
 
@@ -100,7 +100,7 @@ export default function MockCall({ accountId, contactId, goals, difficulty, chec
 
       <section className="card stack">
         <h2>No mic? Score a written practice</h2>
-        <p className="small muted" style={{ margin: 0 }}>Role-play with a teammate and paste the lines here. Start each line with “Rep:” or “Prospect:”. This uses no Retell credit.</p>
+        <p className="small muted" style={{ margin: 0 }}>Role-play with a teammate and paste the lines here. Start each line with “Rep:” or “Prospect:”. This uses no Retell credit, and the score is saved to Training.</p>
         <textarea rows={6} value={paste} onChange={e => setPaste(e.target.value)} aria-label="Practice transcript" placeholder={"Rep: Thanks for taking my call. I saw ...\nProspect: Sure, what's this about?"} />
         <div><button className="btn secondary" onClick={scorePaste}>Score it</button></div>
       </section>

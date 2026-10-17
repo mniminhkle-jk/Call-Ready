@@ -12,12 +12,7 @@ export const POST = handle(async req => {
   const { data: exists } = await sb.from("accounts").select("id").eq("id", id).maybeSingle();
   if (exists) return fail("That account already exists.", 409);
   const now = new Date().toISOString();
-  const brief = {
-    oneLiner: "",
-    sharpest: { text: "Not set yet. Review the signals the Exa check found, then write the single most freight-relevant finding.", why: "", src: [] },
-    company: [], freight: { ships: [], where: [], when: [], who: [] }, openers: [], questions: [], sources: [],
-    research: { agentMinutes: 0, reviewMinutes: 0, gaps: ["New account: brief not reviewed by a rep yet."] },
-  };
+  const brief = { overview: "", address: "", facts: [], freight: [], locations: [], leadership: [], sources: [], research: { agentMinutes: 0, reviewMinutes: 0, gaps: ["New account: review the signals the Exa check found and add facts with sources."] } };
   const { error } = await sb.from("accounts").insert({ id, name: name.trim(), website: website || null, segment, hq: hq || null, stage: "Research", owner: user.name, brief, created_at: now, updated_at: now });
   if (error) throw error;
   await logActivity(id, user.name, "Created account", name.trim());

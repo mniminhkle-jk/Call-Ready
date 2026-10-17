@@ -1,0 +1,20 @@
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { contactBundle } from "@/lib/data";
+import { briefDocx } from "@/lib/docx";
+import { briefMarkdown } from "@/lib/compose";
+import { handle, fail, requireUser } from "@/lib/apiutil";
+export const dynamic = "force-dynamic";
+export const GET = handle(async (req, { params }) => {
+  await requireUser();
+  const { data: c } = await db().from("contacts").select("id,account_id").eq("id", params.cid).maybeSingle();
+  if (!c) return fail("Contact not found.", 404);
+  const b = await contactBundle(c.account_id, c.id);
+  const ctx = { signals: b.signals, notes: b.notes };
+  const format = new URL(req.url).searchParams.get("format") || "docx";
+  const slug = (b.contact.name || b.contact.title).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const date = new Date().toISOString().slice(0, 10);
+  if (format === "md") return new NextResponse(briefMarkdown(b.account, b.contact, ctx), { headers: { "content-type": "text/markdown; charset=utf-8", "content-disposition": `attachment; filename="${slug}-brief-${date}.md"` } });
+  const buf = await briefDocx(b.account, b.contact, ctx);
+  return new NextResponse(buf, { headers: { "content-type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "content-disposition": `attachment; filename="${slug}-brief-${date}.docx"` } });
+});

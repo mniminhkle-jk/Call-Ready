@@ -10,6 +10,9 @@ const AI_LOG = [
   { what: "Confidently wrong number", detail: "A LinkedIn data-enrichment result returned by the search said A. O. Smith has “2,000–3,000 employees.” The company's own job postings say about 12,000.", caught: "Cross-checked against the company's own site. Rule added: company-reported figures beat enrichment data." },
   { what: "Stale source", detail: "A 2014 trade article listed a Pirelli warehouse in Fontana, CA. A 2022 Kuehne+Nagel release says the West Coast site is Rialto, CA.", caught: "Checked the source date. The brief uses the newest source and marks the older article as background only." },
   { what: "Stale ownership fact", detail: "A June 2026 article gave Sinochem's Pirelli stake as 34.1%. A September article says it fell to 20.1% after a July sale.", caught: "Compared the dates of the two sources and kept the later figure." },
+  { what: "Stale person record", detail: "One profile showed John Mears as A. O. Smith's Director of Logistics, \"current since 1996.\" A second profile shows he left for Regal Beloit in 2011.", caught: "Cross-checked people against a second source before adding them. He was left out." },
+  { what: "Conflicting titles", detail: "Ted Karamanos's headline says \"Director of Global Logistics\"; his experience says \"Director of Distribution.\"", caught: "Flagged on his profile: confirm the title before calling." },
+  { what: "Personal contact info in public profiles", detail: "Two public profiles listed personal emails and a personal phone number.", caught: "Not stored. The portal keeps public company lines only; direct lines and emails come from the CRM." },
   { what: "Misread signal priority", detail: "The agent ranked BlueLinx's Q2 earnings headline as the top signal. The Trex, RDI and LP SmartSide rollouts point much more directly at new freight.", caught: "Human judgment on the Sharpest Signal: “Would this make a logistics lead take the call?”" },
 ];
 
@@ -27,11 +30,12 @@ export default async function How() {
         <h2>1 · The reusable build</h2>
         <ol className="list">
           <li><b>Research:</b> Exa searches company sites, press releases, trade press, filings and public job postings for the last 90 days, using freight keywords (new DC, expansion, acquisition, closure, tariff, logistics hiring).</li>
-          <li><b>Brief:</b> findings go into one fixed structure: Sharpest Signal → freight profile (ships / where / when / who moves it) → company now → openers → “I know / I don't know” questions → talk track → sources.</li>
+          <li><b>Company profile:</b> the facts we found (overview, revenue, footprint, freight facts, locations, public phone lines, news), each with a source. No guessing at the company level.</li>
+          <li><b>Person brief:</b> 3–4 people per company from public profiles, each with a Sharpest Signal, what we know (verified or inferred), openers, “I know / I don't know” questions, a talk track, a one-page .docx and a mock call.</li>
           <li><b>Human check:</b> a rep confirms the Sharpest Signal and the verified/inferred labels. Point it at any new prospect from <a href="/new">Add account</a>.</li>
         </ol>
-        <div className="table-wrap"><table><thead><tr><th>Prospect</th><th>Agent research</th><th>Human review</th><th>Where the agent fell short</th></tr></thead><tbody>
-          {SEED_ACCOUNTS.map(a => <tr key={a.id}><td>{a.name}</td><td className="mono">{a.brief.research.agentMinutes} min</td><td className="mono">{a.brief.research.reviewMinutes} min</td><td className="small">{a.brief.research.gaps[0]}</td></tr>)}
+        <div className="table-wrap"><table><thead><tr><th>Person</th><th>Company</th><th>Agent research</th><th>Human review</th><th>Where the agent fell short</th></tr></thead><tbody>
+          {SEED_ACCOUNTS.flatMap(a => a.contacts.map(c => <tr key={c.name}><td>{c.name}</td><td>{a.name}</td><td className="mono">{c.brief.research.agentMinutes} min</td><td className="mono">{c.brief.research.reviewMinutes} min</td><td className="small">{c.brief.research.gaps[0]}</td></tr>))}
         </tbody></table></div>
       </section>
 

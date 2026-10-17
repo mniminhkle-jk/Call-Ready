@@ -11,10 +11,11 @@ export const POST = handle(async (req, { params }) => {
   const r = await getRetellCall(params.callId);
   if (!["ended", "error", "not_connected"].includes(r.call_status)) return json({ pending: true, status: r.call_status });
   const { data: a } = await sb.from("accounts").select("*").eq("id", m.account_id).single();
+  const { data: c } = await sb.from("contacts").select("brief").eq("id", m.contact_id).maybeSingle();
   const turns = parseTranscript(r.transcript_object, r.transcript);
-  const score = turns.length ? scoreCall(turns, a) : null;
+  const score = turns.length ? scoreCall(turns, a, c?.brief) : null;
   const cost = Number(r.call_cost?.combined_cost || 0);
   await sb.from("mock_calls").update({ status: r.call_status === "ended" ? "ended" : "error", transcript: r.transcript || "", score, cost_cents: cost, duration_s: Math.round((r.duration_ms || 0) / 1000), ended_at: new Date().toISOString() }).eq("id", m.id);
-  if (score) await logActivity(m.account_id, user.name, "Finished mock call", `Call Readiness ${score.total}/100`);
+  if (score) await logActivity(m.account_id, user.name, "Finished mock call", `Call Readiness ${score.total}/100`, m.contact_id);
   return json({ score, turns, cost_cents: cost, duration_s: Math.round((r.duration_ms || 0) / 1000), status: r.call_status });
 });

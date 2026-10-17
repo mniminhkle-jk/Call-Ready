@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Shell from "@/app/components/Shell";
 import SetupNeeded from "@/app/components/SetupNeeded";
 import { getUser } from "@/lib/session";
-import { ready, accountBundle } from "@/lib/data";
+import { ready, contactBundle } from "@/lib/data";
 import { callChecklist } from "@/lib/crva";
 import { RUBRIC } from "@/lib/score";
 import { GOALS, DIFFICULTY } from "@/lib/persona";
@@ -15,23 +15,21 @@ export const dynamic = "force-dynamic";
 export default async function MockPage({ params }) {
   const user = await getUser();
   const status = await ready();
-  if (!status.ok) return <Shell user={user}><SetupNeeded status={status} /></Shell>;
-  const bundle = await accountBundle(params.id);
+  if (!status.ok) return <Shell user={user} active="/training"><SetupNeeded status={status} /></Shell>;
+  const bundle = await contactBundle(params.id, params.cid);
   if (!bundle) notFound();
-  const { account: a, contacts } = bundle;
-  const c = contacts.find(x => x.id === params.cid);
-  if (!c) notFound();
-  const p = a.brief?.persona || {};
+  const { account: a, contact: c } = bundle;
+  const p = { ...(c.brief?.persona || {}), cares: c.brief?.cares || [] };
   return (
-    <Shell user={user}>
-      <div className="row small"><Link href={`/accounts/${a.id}/contacts/${c.id}`}>← {c.name || c.title}</Link></div>
+    <Shell user={user} active="/training">
+      <div className="row small"><Link href={`/accounts/${a.id}`}>{a.name}</Link><span className="muted">/</span><Link href={`/accounts/${a.id}/contacts/${c.id}`}>{c.name || c.title}</Link><span className="muted">/</span><span>Mock call</span></div>
       <div className="stack" style={{ gap: 4 }}>
         <div className="eyebrow">Mock call · {a.name}</div>
         <h1>Practice the call before you dial</h1>
-        <p className="muted" style={{ margin: 0 }}>You'll talk to an AI prospect playing <b>{c.title.replace(/\s*\(.*\)\s*$/, "")}</b>, built from this account's brief. Calls stop at {MAX_CALL_MS / 60000} minutes.</p>
+        <p className="muted" style={{ margin: 0 }}>You'll talk to an AI version of <b>{c.name || c.title}</b> ({c.title.replace(/\s*\(.*\)\s*$/, "")}), built from their brief. Calls stop at {MAX_CALL_MS / 60000} minutes.</p>
       </div>
       <div className="grid-main">
-        <MockCall accountId={a.id} contactId={c.id} goals={GOALS} difficulty={Object.entries(DIFFICULTY)} checklist={callChecklist(a, c)} rubric={RUBRIC.map(({ id, part, label, points, test }) => ({ id, part, label, points, test }))} budgetCap={BUDGET_CENTS} model={RETELL_MODEL} />
+        <MockCall accountId={a.id} contactId={c.id} goals={GOALS} difficulty={Object.entries(DIFFICULTY)} checklist={callChecklist(c)} rubric={RUBRIC.map(({ id, part, label, points, test }) => ({ id, part, label, points, test }))} budgetCap={BUDGET_CENTS} model={RETELL_MODEL} />
         <aside className="stack" style={{ gap: 16 }}>
           <section className="card stack small">
             <h2>The persona</h2>
