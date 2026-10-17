@@ -1,0 +1,20 @@
+import { db, logActivity } from "@/lib/db";
+import { getRetellCall } from "@/lib/integrations";
+import { parseTranscript, scoreCall } from "@/lib/score";
+import { handle, json, fail, requireUser } from "@/lib/apiutil";
+export const maxDuration = 30;
+export const POST = handle(async (req, { params }) => {
+  const user = await requireUser();
+  const sb = db();
+  const { data: m } = await sb.from("mock_calls").select("*").eq("call_id", params.callId).maybeSingle();
+  if (!m) return fail("Mock call not found.", 404);
+  const r = await getRetellCall(params.callId);
+  if (!["ended", "error", "not_connected"].includes(r.call_status)) return json({ pending: true, status: r.call_status });
+  const { data: a } = await sb.from("accounts").select("*").eq("id", m.account_id).single();
+  const turns = parseTranscript(r.transcript_object, r.transcript);
+  const score = turns.length ? scoreCall(turns, a) : null;
+  const cost = Number(r.call_cost?.combined_cost || 0);
+  await sb.from("mock_calls").update({ status: r.call_status === "ended" ? "ended" : "error", transcript: r.transcript || "", score, cost_cents: cost, duration_s: Math.round((r.duration_ms || 0) / 1000), ended_at: new Date().toISOString() }).eq("id", m.id);
+  if (score) await logActivity(m.account_id, user.name, "Finished mock call", `Call Readiness ${score.total}/100`);
+  return json({ score, turns, cost_cents: cost, duration_s: Math.round((r.duration_ms || 0) / 1000), status: r.call_status });
+});
