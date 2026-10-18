@@ -2,7 +2,7 @@
 Senior Director, Logistics Operations · Pirelli Tire North America · Atlanta, GA · in role since 2021-10  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** Pirelli Tire LLC, Rome GA (main): 706-368-5800 · Pirelli customer service: 1-800-747-3554 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/johnmgodfreyjr)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/johnmgodfreyjr)
 
 > **Sharpest Signal** John built Pirelli's Mexico cross-border strategy and helped set up the Rome plant in 2002. The Sept 22 approval to expand Rome to ~6M tires means he'll redesign the network again, and he's already pushing GPS tracking into the TMS. [1][2][3]
 >

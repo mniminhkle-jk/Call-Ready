@@ -2,7 +2,7 @@
 Transportation Manager · A. O. Smith · Nashville, TN · in role since 2022-05  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** A. O. Smith Water Products, Ashland City TN (division HQ): 866-362-9898 · A. O. Smith world HQ, Milwaukee: 414-359-4000 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/patrick-williams-mba-0a898721)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/patrick-williams-mba-0a898721)
 
 > **Sharpest Signal** Groveport, OH closes by Dec 11 and its work moves to Appleton, WI and Haltom City, TX. Patrick's team has to cover transfer loads out of Ohio and new outbound lanes in the next 60 days, on top of pre-buy surges before the 4–7% price increase. [2][3]
 >

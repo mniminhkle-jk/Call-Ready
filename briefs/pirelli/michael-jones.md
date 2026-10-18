@@ -2,7 +2,7 @@
 Outbound Logistics Manager · Pirelli Tire North America · Rome, GA · in role since 2024-08  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** Pirelli Tire LLC, Rome GA (main): 706-368-5800 · Pirelli customer service: 1-800-747-3554 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/michael-jones-904514134)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/michael-jones-904514134)
 
 > **Sharpest Signal** Michael runs outbound from Rome and built the control tower that scores carriers on KPIs. Winter-tire sell-in is running now, and Cyber Tyre production just started in Rome. [1][2]
 >

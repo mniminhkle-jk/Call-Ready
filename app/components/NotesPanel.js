@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, fmtDateTime } from "./api";
 
@@ -51,7 +51,12 @@ export default function NotesPanel({ accountId, contacts, notes, stage, contactI
     setBusy(false);
   }
   async function save(e) {
-    e.preventDefault(); setBusy(true); setMsg("");
+    e.preventDefault(); setMsg("");
+    const filled = CQPPPIN.filter(([k]) => f.results[k].trim()).length;
+    if (!f.purpose.trim()) return setMsg("Add the purpose (P): one sentence on why you met.");
+    if (filled < 3) return setMsg(`Add at least 3 of the 7 Results (R). You have ${filled}. Quantify, Process and Problem are a good start.`);
+    if (!f.next.some(n => n.text.trim() && n.due)) return setMsg("Add at least one next step (N) with a due date.");
+    setBusy(true);
     try {
       await api("/api/notes", "POST", { account_id: accountId, contact_id: f.contact_id || null, kind: gId ? "granola" : "call", method: f.method, granola_id: gId, stage: f.stage || null, prn: { purpose: f.purpose, results: f.results, contacts: f.contacts, decisionMaker: f.decisionMaker, next: f.next.filter(n => n.text.trim()), unclear: f.unclear } });
       setF({ ...empty(), contact_id: contactId || "" }); setGId(null); setOpen(false); setMsg("Note saved. The brief and next steps now include it.");
@@ -63,10 +68,10 @@ export default function NotesPanel({ accountId, contacts, notes, stage, contactI
   return (
     <section className="card stack">
       <div className="card-head" style={{ marginBottom: 0 }}>
-        <h2>Call notes (PRN)</h2>
+        <h2>Call notes</h2>
         <div className="row">
           <button className="btn secondary" type="button" disabled={busy} onClick={loadGranola}>Import from Granola</button>
-          <button className="btn" type="button" onClick={() => setOpen(o => !o)}>{open ? "Close" : "Log a call"}</button>
+          <button className="btn" type="button" onClick={() => setOpen(o => !o)} data-guide="log-call">{open ? "Close form" : "Log a call"}</button>
         </div>
       </div>
       {msg && <div className="notice small">{msg}</div>}
@@ -82,7 +87,7 @@ export default function NotesPanel({ accountId, contacts, notes, stage, contactI
           <div><label htmlFor="n-contact">Main contact</label><select id="n-contact" value={f.contact_id} onChange={set("contact_id")}><option value="">Not linked</option>{contacts.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></div>
           <div><label htmlFor="n-stage">Move stage to</label><select id="n-stage" value={f.stage} onChange={set("stage")}><option value="">Keep “{stage}”</option>{STAGES.map(s => <option key={s}>{s}</option>)}</select></div>
         </div>
-        <div className="eyebrow">R · Results (CQPPPIN): capture at least three</div>
+        <div className="eyebrow">R · Results (CQPPPIN): at least 3 of 7</div>
         {CQPPPIN.map(([k, l, hint]) => <div key={k}><label htmlFor={`n-${k}`}>{l} <span className="muted" style={{ fontWeight: 400 }}>· {hint}</span></label><textarea id={`n-${k}`} rows={2} value={f.results[k]} onChange={setR(k)} /></div>)}
         <div className="field-grid">
           <div><label htmlFor="n-contacts">New contacts / titles uncovered</label><input id="n-contacts" type="text" value={f.contacts} onChange={set("contacts")} /></div>
@@ -100,19 +105,19 @@ export default function NotesPanel({ accountId, contacts, notes, stage, contactI
           <b>Strong-notes check:</b>{" "}
           {["3+ CQPPPIN takeaways", "method + names", "dated next step", "clear purpose"].map((t, i) => <span key={t} style={{ marginRight: 10, color: strength[i] ? "var(--ok)" : "var(--muted)" }}>{strength[i] ? "✓" : "○"} {t}</span>)}
         </div>
-        <div className="row"><button className="btn" type="submit" disabled={busy}>Save note</button></div>
+        <div className="row"><button className="btn" type="submit" disabled={busy}>Save call notes</button></div>
       </form>}
 
-      <ul className="timeline">
-        {notes.length === 0 && <li className="muted small">No calls logged yet. The first note sets “last touched” and feeds the next steps.</li>}
-        {notes.map(n => <li key={n.id} className="small">
-          <div className="row" style={{ gap: 8 }}><b>{n.author}</b><span className="muted">{fmtDateTime(n.created_at)} · {n.method}</span>{n.kind === "granola" && <span className="pill">Granola</span>}</div>
-          <div><b>P:</b> {n.prn.purpose}</div>
-          {CQPPPIN.filter(([k]) => n.prn.results?.[k]).map(([k, l]) => <div key={k}><b>{l}:</b> {n.prn.results[k]}</div>)}
-          {n.prn.contacts && <div><b>New contacts:</b> {n.prn.contacts}</div>}
-          {n.prn.next?.length > 0 && <div><b>N:</b> {n.prn.next.map((s, i) => <span key={i}>{i ? "; " : ""}{s.text}{s.due ? ` (due ${s.due}${s.owner ? `, ${s.owner}` : ""})` : ""}</span>)}</div>}
-        </li>)}
-      </ul>
+      {notes.length === 0 && <p className="muted small" style={{ margin: 0 }}>No calls logged yet. Your first note feeds the next steps and the one-page brief.</p>}
+      <div className="stack" style={{ gap: 12 }}>
+        {notes.map(n => { const filled = CQPPPIN.filter(([k]) => n.prn.results?.[k]).length; return (
+          <article key={n.id} className="note">
+            <header className="row spread small"><span><b>{n.author}</b> · {fmtDateTime(n.created_at)} · {n.method}{n.kind === "granola" ? " · from Granola" : ""}</span><span className={`chip ${filled >= 3 ? "green" : "yellow"}`}>{filled}/7 CQPPPIN</span></header>
+            <div className="prn-row"><span className="prn-k" aria-label="Purpose">P</span><div>{n.prn.purpose}</div></div>
+            <div className="prn-row"><span className="prn-k" aria-label="Results">R</span><dl className="kv small">{CQPPPIN.map(([k, l]) => <Fragment key={k}><dt>{l}</dt><dd>{n.prn.results?.[k] || <span className="empty-val">Not captured</span>}</dd></Fragment>)}{n.prn.contacts && <><dt>New contacts</dt><dd>{n.prn.contacts}</dd></>}{n.prn.decisionMaker && <><dt>Decision maker</dt><dd>{n.prn.decisionMaker}</dd></>}</dl></div>
+            <div className="prn-row"><span className="prn-k" aria-label="Next steps">N</span><div className="small"><ul className="list">{(n.prn.next || []).map((x, i) => <li key={i}>{x.text}{x.due ? ` (due ${x.due}${x.owner ? `, ${x.owner}` : ""})` : ""}</li>)}</ul>{n.prn.unclear && <div className="muted" style={{ marginTop: 4 }}><b>Still unclear:</b> {n.prn.unclear}</div>}</div></div>
+          </article>); })}
+      </div>
     </section>
   );
 }

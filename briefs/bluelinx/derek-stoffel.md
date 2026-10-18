@@ -2,7 +2,7 @@
 Logistics Manager, Western US · BlueLinx · Englewood, CO · in role since 2008-01  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** BlueLinx corporate (general): 770-953-7000 · BlueLinx vendor relations: 770-953-4902 · Email: add from CRM · [LinkedIn](https://www.linkedin.com/in/derek-stoffel-04990b2b)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://www.linkedin.com/in/derek-stoffel-04990b2b)
 
 > **Sharpest Signal** The West is where BlueLinx is growing: a Portland DC (2024), Disdero in Clackamas (Nov 2025), a 65,800 sq ft Portland lease (Jul 2026), and RDI railing added in Denver, Derek's home market, in Sept 2026. [2][3][4]
 >

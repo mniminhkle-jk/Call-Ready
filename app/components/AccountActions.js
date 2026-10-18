@@ -42,12 +42,12 @@ export function SignalsPanel({ id, signals, checkedAt }) {
   const [msg, setMsg] = useState("");
   const [showAll, setShowAll] = useState(false);
   const visible = signals.filter(s => s.status !== "dismissed");
-  const list = showAll ? visible : visible.slice(0, 6);
+  const list = showAll ? visible : visible.slice(0, 3);
   async function refresh() {
     setBusy(true); setMsg("");
     try {
       const r = await api(`/api/accounts/${id}/signals`, "POST");
-      setMsg(r.errors?.length ? `Exa returned an error: ${r.errors[0]}` : `Checked ${r.checked} results. ${r.inserted} new signal${r.inserted === 1 ? "" : "s"} saved; duplicates skipped.`);
+      setMsg(r.errors?.length ? `Couldn't check for news: ${r.errors[0]}` : r.inserted ? `${r.inserted} new update${r.inserted === 1 ? "" : "s"} found.` : "No new updates since the last check.");
       router.refresh();
     } catch (e) { setMsg(e.message); }
     setBusy(false);
@@ -58,8 +58,8 @@ export function SignalsPanel({ id, signals, checkedAt }) {
   }
   return (
     <section className="card stack">
-      <div className="card-head" style={{ marginBottom: 0 }}><h2>Signals</h2><button className="btn secondary" disabled={busy} onClick={refresh}>{busy ? "Checking…" : "Run Exa check"}</button></div>
-      <div className="small muted">Watches the last 90 days for new facilities, expansions, acquisitions, tariffs and logistics hiring. Last checked {checkedAt ? fmtDate(checkedAt) : "never"}.</div>
+      <div className="card-head" style={{ marginBottom: 0 }}><h2>Company news</h2><button className="btn secondary" disabled={busy} onClick={refresh} data-guide="run-exa">{busy ? "Checking…" : "Check for news"}</button></div>
+      <div className="small muted">Last checked {checkedAt ? fmtDate(checkedAt) : "never"}</div>
       {msg && <div className="notice small">{msg}</div>}
       <ul className="timeline small">
         {list.map(s => <li key={s.id}>
@@ -67,12 +67,12 @@ export function SignalsPanel({ id, signals, checkedAt }) {
           <a href={s.url} target="_blank" rel="noreferrer">{s.title}</a>
           <div className="muted">{s.published_at ? fmtDate(s.published_at) : "date unknown"}</div>
           {s.status === "new" && <div className="row" style={{ gap: 4 }}>
-            <button className="btn ghost small" onClick={() => setStatus(s.id, "reviewed")}>Mark reviewed</button>
+            <button className="btn ghost small" onClick={() => setStatus(s.id, "reviewed")}>Got it</button>
             <button className="btn ghost small" onClick={() => setStatus(s.id, "dismissed")}>Dismiss</button>
           </div>}
         </li>)}
       </ul>
-      {visible.length > 6 && <button className="btn ghost" onClick={() => setShowAll(v => !v)}>{showAll ? "Show fewer" : `Show all ${visible.length}`}</button>}
+      {visible.length > 3 && <button className="btn ghost" onClick={() => setShowAll(v => !v)}>{showAll ? "Show fewer" : `Show all ${visible.length}`}</button>}
     </section>
   );
 }
@@ -83,7 +83,7 @@ export function AddFact({ id }) {
   const [f, setF] = useState({ label: "", text: "", url: "", title: "" });
   const [msg, setMsg] = useState("");
   const set = k => e => setF(s => ({ ...s, [k]: e.target.value }));
-  if (!open) return <section className="card row spread"><div><h2>Add something you found</h2><div className="small muted">Any rep can add a company fact with its source. Every save keeps the previous version.</div></div><button className="btn secondary" onClick={() => setOpen(true)}>Add a fact</button></section>;
+  if (!open) return <div><button className="btn secondary" onClick={() => setOpen(true)} data-guide="add-fact">Add a fact you found</button></div>;
   return (
     <form className="card stack" onSubmit={async e => {
       e.preventDefault(); setMsg("");
@@ -121,7 +121,7 @@ export function PersonBriefEditor({ id, brief }) {
       setMsg("Saved. The previous version is kept in brief history."); router.refresh();
     } catch (e) { setMsg(e.message); }
   }
-  if (!open) return <section className="card row spread"><div><h2>Edit this brief</h2><div className="small muted">Any rep can update it. Every save keeps the previous version.</div></div><button className="btn secondary" onClick={() => setOpen(true)}>Edit brief</button></section>;
+  if (!open) return <div><button className="btn secondary" onClick={() => setOpen(true)}>Edit brief</button> <span className="small muted">Every save keeps the previous version.</span></div>;
   return (
     <section className="card stack">
       <div className="card-head"><h2>Edit this brief</h2><button className="btn ghost" onClick={() => setOpen(false)}>Close</button></div>
@@ -144,7 +144,7 @@ export function AddContact({ accountId }) {
   const [f, setF] = useState({ name: "", title: "", role_type: "Logistics", linkedin_url: "", email: "", phone: "", contact_source: "crm", why: "" });
   const [err, setErr] = useState("");
   const set = k => e => setF(s => ({ ...s, [k]: e.target.value }));
-  if (!open) return <button className="btn secondary" onClick={() => setOpen(true)}>+ Create new contact</button>;
+  if (!open) return <div><button className="btn secondary" onClick={() => setOpen(true)} data-guide="add-contact">Add contact</button></div>;
   return (
     <form className="stack" onSubmit={async e => {
       e.preventDefault(); setErr("");
@@ -156,12 +156,12 @@ export function AddContact({ accountId }) {
       <div><label htmlFor="c-name">Name</label><input id="c-name" type="text" value={f.name} onChange={set("name")} /></div>
       <div><label htmlFor="c-loc">Location</label><input id="c-loc" type="text" value={f.location || ""} onChange={set("location")} /></div>
       <div><label htmlFor="c-role">Position type</label><select id="c-role" value={f.role_type} onChange={set("role_type")}>{["Executive", "Supply Chain", "Logistics", "Procurement", "Operations"].map(r => <option key={r}>{r}</option>)}</select></div>
-      <div><label htmlFor="c-src">Where this contact info came from</label><select id="c-src" value={f.contact_source} onChange={set("contact_source")}><option value="crm">From CRM</option><option value="public">Public source</option><option value="rep">Rep entered</option></select></div>
-      <div><label htmlFor="c-email">Business email</label><input id="c-email" type="email" value={f.email} onChange={set("email")} /></div>
-      <div><label htmlFor="c-phone">Phone</label><input id="c-phone" type="tel" value={f.phone} onChange={set("phone")} /></div>
+      <div><label htmlFor="c-src">Source</label><select id="c-src" value={f.contact_source} onChange={set("contact_source")}><option value="crm">From CRM</option><option value="public">Public source</option><option value="rep">Rep entered</option></select></div>
+      <div><label htmlFor="c-email">Business email (optional)</label><input id="c-email" type="email" value={f.email} onChange={set("email")} /></div>
+      <div><label htmlFor="c-phone">Direct phone (optional)</label><input id="c-phone" type="tel" value={f.phone} onChange={set("phone")} /></div>
       <div><label htmlFor="c-li">LinkedIn URL</label><input id="c-li" type="url" value={f.linkedin_url} onChange={set("linkedin_url")} /></div>
       <div><label htmlFor="c-why">Why they matter</label><textarea id="c-why" value={f.why} onChange={set("why")} rows={2} /></div>
-      <div className="row"><button className="btn" type="submit">Save contact</button><button className="btn ghost" type="button" onClick={() => setOpen(false)}>Cancel</button></div>
+      <div className="row"><button className="btn" type="submit">Add contact</button><button className="btn ghost" type="button" onClick={() => setOpen(false)}>Cancel</button></div>
     </form>
   );
 }

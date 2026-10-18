@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import CopyButton from "./CopyButton";
 
@@ -15,6 +15,17 @@ export default function Outreach({ account, contact, options, drafts, li }) {
   const [subject, setSubject] = useState("");
   const [liText, setLiText] = useState("");
   const [msg, setMsg] = useState("");
+  const modalRef = useRef(null);
+  const opener = useRef(null);
+  useEffect(() => {
+    if (!mode) return;
+    const first = modalRef.current?.querySelector("select, textarea, button");
+    first?.focus();
+    const onKey = e => { if (e.key === "Escape") closeModal(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mode]);
+  function closeModal() { setMode(null); setTimeout(() => opener.current?.focus(), 0); }
 
   function openEmail() { setBody(d.body); setSubject(d.subject); setMode("email"); setMsg(""); api("/api/activity", "POST", { account_id: account.id, contact_id: contact.id, kind: "email-drafted", detail: contact.name || contact.title }).catch(() => {}); }
   function openLi() { setLiText(l.text); setMode("linkedin"); setMsg(""); api("/api/activity", "POST", { account_id: account.id, contact_id: contact.id, kind: "linkedin-drafted", detail: contact.name || contact.title }).catch(() => {}); }
@@ -28,23 +39,20 @@ export default function Outreach({ account, contact, options, drafts, li }) {
   }
   async function markSent(kind) {
     await api("/api/activity", "POST", { account_id: account.id, contact_id: contact.id, kind, detail: contact.name || contact.title });
-    setMsg("Logged as sent. Last-touched date updated."); setTimeout(() => setMode(null), 900);
+    setMsg("Logged as sent."); setTimeout(closeModal, 900);
   }
   const mailto = `mailto:${contact.email || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   const lines = mode === "email" ? d.lines : l?.lines || [];
 
   return (
-    <section className="card stack">
-      <h2>Outreach</h2>
-      <p className="small muted" style={{ margin: 0 }}>Drafts are built in CRVA order from sourced lines in the brief. You review and edit, then send from your own email or LinkedIn. Nothing sends automatically.</p>
-      <div className="row">
-        <button className="btn" onClick={openEmail}>Draft email</button>
-        <button className="btn secondary" onClick={openLi}>Draft LinkedIn note</button>
-      </div>
+    <>
+        <button className="btn" onClick={e => { opener.current = e.currentTarget; openEmail(); }} data-guide="draft-email">Draft email</button>
+        <button className="btn secondary" onClick={e => { opener.current = e.currentTarget; openLi(); }} data-guide="draft-linkedin">LinkedIn note</button>
 
-      {mode && <div className="modal-bg" role="dialog" aria-modal="true" aria-labelledby="draft-title" onClick={e => e.target === e.currentTarget && setMode(null)}>
-        <div className="modal">
-          <div className="card-head" style={{ marginBottom: 0 }}><h2 id="draft-title">{mode === "email" ? "CRVA email draft" : "LinkedIn note (under 200 characters)"}</h2><button className="btn ghost" onClick={() => setMode(null)}>Close</button></div>
+      {mode && <div className="modal-bg" onClick={e => e.target === e.currentTarget && closeModal()}>
+        <div className="modal" role="dialog" aria-modal="true" aria-labelledby="draft-title" ref={modalRef}>
+          <div className="card-head" style={{ marginBottom: 0 }}><h2 id="draft-title">{mode === "email" ? "Email draft" : "LinkedIn note"}</h2><button className="btn ghost" onClick={closeModal}>Close</button></div>
+          <p className="small muted" style={{ margin: 0 }}>{mode === "email" ? "Built in CRVA order from the brief. Edit it, then send from your own email." : "Under 200 characters. Edit it, then send it on LinkedIn."}</p>
           <div className="field-grid">
             <div><label htmlFor="o-connect">Connect with</label><select id="o-connect" value={connectId} onChange={e => regen({ connectId: e.target.value })}>{options.map(o => <option key={o.id} value={o.id} disabled={!o.usable}>{o.label}{o.usable ? "" : " (locked)"}</option>)}</select></div>
             {mode === "email" && <>
@@ -53,13 +61,13 @@ export default function Outreach({ account, contact, options, drafts, li }) {
             </>}
           </div>
           <div>
-            <div className="eyebrow" style={{ marginBottom: 4 }}>Where each line comes from</div>
+            <details className="more"><summary>Where each line comes from</summary>
             {lines.map((x, i) => <div key={i} className="draft-line"><span className="p">{x.part}</span><div className="small"><div>{x.text}</div><div className="muted">{x.sourceLabel}{x.source && <> · <a className="src" href={x.source} target="_blank" rel="noreferrer">source</a></>}</div></div></div>)}
-          </div>
+          </details></div>
           {mode === "email" ? <>
             <div><label htmlFor="o-subj">Subject</label><input id="o-subj" type="text" value={subject} onChange={e => setSubject(e.target.value)} /></div>
             <div><label htmlFor="o-body">Email (edit before sending)</label><textarea id="o-body" rows={11} value={body} onChange={e => setBody(e.target.value)} /></div>
-            {!contact.email && <div className="notice small">No business email on file. Add it from your CRM in the Contact panel, or copy the text.</div>}
+            {!contact.email && <div className="notice small">No email on file yet. Copy the text, or add their email under Contact info.</div>}
             <div className="row">
               <CopyButton text={`Subject: ${subject}\n\n${body}`} label="Copy email" className="btn" />
               <a className="btn secondary" href={mailto}>Open in mail app</a>
@@ -77,6 +85,6 @@ export default function Outreach({ account, contact, options, drafts, li }) {
           {msg && <div className="notice ok small">{msg}</div>}
         </div>
       </div>}
-    </section>
+    </>
   );
 }

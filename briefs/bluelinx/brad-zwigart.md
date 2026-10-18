@@ -2,7 +2,7 @@
 Senior Director of Logistics Operations · BlueLinx · Atlanta, GA · in role since 2024-04  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** BlueLinx corporate (general): 770-953-7000 · BlueLinx vendor relations: 770-953-4902 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/brad-zwigart)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/brad-zwigart)
 
 > **Sharpest Signal** BlueLinx went live on Oracle TMS across nearly 60 sites this year, and Brad's next stated goal is capturing the savings. In the same months, Trex, RDI and LP SmartSide added new inbound lanes with no carrier history. [1][3][4]
 >

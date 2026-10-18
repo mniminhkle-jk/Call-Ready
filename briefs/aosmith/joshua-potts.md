@@ -2,7 +2,7 @@
 Senior North American Distribution Manager · A. O. Smith · Nashville metro, TN · in role since 2023-06  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** A. O. Smith Water Products, Ashland City TN (division HQ): 866-362-9898 · A. O. Smith world HQ, Milwaukee: 414-359-4000 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/joshuarpotts)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/joshuarpotts)
 
 > **Sharpest Signal** Storm damage at Ashland City, the world's largest water heater plant, constrained production and shipping in Q1 2026. Joshua runs North American distribution and has worked every role in that DC. [2][3]
 >

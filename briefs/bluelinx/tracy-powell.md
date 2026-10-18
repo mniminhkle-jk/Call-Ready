@@ -2,7 +2,7 @@
 Director, Regional Logistics – Southwest · BlueLinx · United States (Southwest region) · in role since 2000-05  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** BlueLinx corporate (general): 770-953-7000 · BlueLinx vendor relations: 770-953-4902 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/tracy-powell-27823245)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/tracy-powell-27823245)
 
 > **Sharpest Signal** On Sept 29, 2026 BlueLinx added LP SmartSide stocking in Dallas-Fort Worth, El Paso, Harlingen, Houston, Lubbock and San Antonio, and RDI railing landed in Tulsa and Oklahoma City two weeks earlier. That's new inbound in Tracy's region. [2][3]
 >

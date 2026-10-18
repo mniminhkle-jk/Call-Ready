@@ -2,7 +2,7 @@
 Director of Distribution (headline: Director of Global Logistics) · A. O. Smith · Ashland City, TN · in role since 2015-08  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** A. O. Smith Water Products, Ashland City TN (division HQ): 866-362-9898 · A. O. Smith world HQ, Milwaukee: 414-359-4000 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/ted-karamanos-519263bb)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/ted-karamanos-519263bb)
 
 > **Sharpest Signal** A. O. Smith opened a third Juárez plant in Sept 2024 that makes tankless and heat pump water heaters, feeding its El Paso DC. Ted's headline says he directs global logistics from Ashland City. [2][3]
 >

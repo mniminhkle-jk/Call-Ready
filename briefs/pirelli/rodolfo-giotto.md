@@ -2,7 +2,7 @@
 North America Logistics Director · Pirelli Tire North America · Rome, GA · in role since 2018-07  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** Pirelli Tire LLC, Rome GA (main): 706-368-5800 · Pirelli customer service: 1-800-747-3554 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/rodolfogiotto)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/rodolfogiotto)
 
 > **Sharpest Signal** Pirelli approved ~$1.2B to expand Rome on Sept 22, but Rome supplied only ~5% of US demand in 2025. For years, most volume still comes from Silao and through the ports, and Rodolfo is the person who buys that logistics. [2][3][4]
 >

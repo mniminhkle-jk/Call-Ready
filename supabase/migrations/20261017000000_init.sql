@@ -83,6 +83,7 @@ create table if not exists activity (
   id bigint generated always as identity primary key,
   account_id text references accounts(id) on delete cascade,
   contact_id uuid references contacts(id) on delete set null,
+  source text not null default 'call_ready',       -- call_ready | salesforce | hubspot
   actor text,
   action text not null,
   detail text,

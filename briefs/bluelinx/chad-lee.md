@@ -2,7 +2,7 @@
 Vice President, Distribution & Operations · BlueLinx · Marietta, GA · in role since 2023-11  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** BlueLinx corporate (general): 770-953-7000 · BlueLinx vendor relations: 770-953-4902 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/e-chad-lee)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/e-chad-lee)
 
 > **Sharpest Signal** Chad owns BlueLinx distribution as three supplier lines (Trex, RDI, LP SmartSide) land in new DCs, and Q2 named third-party freight as a cost driver. He has run freight RFPs that cut costs 4% before. [1][2][3]
 >

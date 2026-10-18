@@ -20,8 +20,8 @@ export default async function Accounts() {
   return (
     <Shell user={user} active="/accounts">
       <div className="row spread">
-        <div><div className="eyebrow">Accounts</div><h1>Find a company or a person</h1></div>
-        <Link className="btn" href="/new">+ Add account</Link>
+        <h1>Accounts</h1>
+        <Link className="btn secondary" href="/new">Add a company</Link>
       </div>
       <Search accounts={slim} />
     </Shell>

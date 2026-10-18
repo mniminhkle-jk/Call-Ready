@@ -2,7 +2,7 @@
 VP Supply Chain, North America · Pirelli Tire North America · Atlanta metro, GA · in role since 2020-06  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** Pirelli Tire LLC, Rome GA (main): 706-368-5800 · Pirelli customer service: 1-800-747-3554 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/bruno-piccioli)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/bruno-piccioli)
 
 > **Sharpest Signal** Bruno owns North America supply chain as Pirelli commits ~$1.2B to Rome and shifts its 'local for local' mix away from imports. He previously ran network distribution planning in Milan. [1][2]
 >

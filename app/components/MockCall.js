@@ -68,9 +68,9 @@ export default function MockCall({ accountId, contactId, goals, difficulty, chec
           <div><label htmlFor="m-diff">Prospect mood</label><select id="m-diff" value={diff} onChange={e => setDiff(e.target.value)} disabled={phase === "live" || phase === "connecting"}>{difficulty.map(([k, v]) => <option key={k} value={k}>{v.split(":")[0]}</option>)}</select></div>
         </div>
         <div className="stack small" style={{ gap: 6 }}>
-          <div className="row spread"><span>Mock-call credit used: <b className="mono">${(used / 100).toFixed(2)}</b> of <span className="mono">${(budgetCap / 100).toFixed(2)}</span> cap</span><span className="muted">Voice on Retell · {model}</span></div>
+          <div className="row spread"><span>Mock-call credit used: <b className="mono">${(used / 100).toFixed(2)}</b> of <span className="mono">${(budgetCap / 100).toFixed(2)}</span> cap</span></div>
           <div className="meter" aria-hidden><span style={{ width: `${pct}%`, background: pct > 85 ? "var(--err)" : pct > 60 ? "var(--warn)" : "var(--ok)" }} /></div>
-          <div className="muted">About 8¢ a minute. New calls are blocked before the cap, so the $10 free credit can't be exceeded.</div>
+          
         </div>
         {err && <div className="notice err small" role="alert">{err}</div>}
         <div className="row">
@@ -82,7 +82,7 @@ export default function MockCall({ accountId, contactId, goals, difficulty, chec
       </section>
 
       <section className="card stack">
-        <h2>Hit these on the call (CRVA)</h2>
+        <h2>Hit these on the call</h2>
         {checklist.map(x => <div key={x.part + x.title} className="draft-line"><span className="p">{x.part}</span><div><b>{x.title}:</b> {x.hit}{x.say && <div className="small muted" style={{ marginTop: 2 }}>Try: “{x.say}”</div>}</div></div>)}
       </section>
 
@@ -98,7 +98,7 @@ export default function MockCall({ accountId, contactId, goals, difficulty, chec
       </section>}
       {result && !result.score && <div className="notice small">The call ended before anyone spoke, so there's nothing to score.</div>}
 
-      <section className="card stack">
+      <section className="card stack" data-guide="written-practice" tabIndex={-1}>
         <h2>No mic? Score a written practice</h2>
         <p className="small muted" style={{ margin: 0 }}>Role-play with a teammate and paste the lines here. Start each line with “Rep:” or “Prospect:”. This uses no Retell credit, and the score is saved to Training.</p>
         <textarea rows={6} value={paste} onChange={e => setPaste(e.target.value)} aria-label="Practice transcript" placeholder={"Rep: Thanks for taking my call. I saw ...\nProspect: Sure, what's this about?"} />

@@ -20,7 +20,7 @@ export default async function Training() {
     <Shell user={user} active="/training">
       <div className="row spread">
         <div><div className="eyebrow">Training</div><h1>Mock call results</h1></div>
-        {t.isSample && <span className="sample-badge">Includes sample practice calls</span>}
+
       </div>
       <div className="tiles">
         <div className="tile"><span className="l">Practice calls scored</span><span className="v">{t.rows.length}</span><span className="s">{mine.length} by you</span></div>
@@ -29,14 +29,14 @@ export default async function Training() {
       </div>
       <div className="grid-main">
         <section className="card">
-          <h2>All practice calls</h2>
+          <h2>Practice calls</h2>
           <div className="table-wrap"><table><thead><tr><th>Date</th><th>Rep</th><th>Prospect</th><th>Score</th>{RUBRIC.map(r => <th key={r.id} title={r.label}>{r.part}</th>)}<th></th></tr></thead><tbody>
             {t.rows.map(r => <tr key={r.id}>
               <td className="mono small">{fmtDate(r.created_at)}</td>
-              <td>{r.rep}{r.is_sample && <span className="sample-badge" style={{ marginLeft: 6 }}>sample</span>}</td>
+              <td>{r.rep}</td>
               <td>{r.contact ? <Link href={`/accounts/${r.account_id}/contacts/${r.contact_id}`}>{r.contact.name || r.contact.title}</Link> : "—"}<div className="small muted">{r.account?.name}</div></td>
               <td><span className={`chip ${r.score.total >= 80 ? "green" : r.score.total >= 60 ? "yellow" : "red"}`}>{r.score.total}</span></td>
-              {RUBRIC.map(x => { const it = r.score.items.find(i => i.id === x.id); return <td key={x.id} className="mono small" title={`${x.label}: ${it?.earned}/${x.points}`} style={{ color: it?.status === "hit" ? "var(--ok)" : it?.status === "partial" ? "var(--warn)" : "var(--err)" }}>{it?.status === "hit" ? "✓" : it?.status === "partial" ? "½" : "✕"}</td>; })}
+              {RUBRIC.map(x => { const it = r.score.items.find(i => i.id === x.id); return <td key={x.id} className="mono small" title={`${x.label}: ${it?.earned}/${x.points}`} style={{ color: it?.status === "hit" ? "var(--ok)" : it?.status === "partial" ? "var(--warn)" : "var(--err)" }}><span aria-hidden="true">{it?.status === "hit" ? "✓" : it?.status === "partial" ? "½" : "✕"}</span><span className="sr">{x.label}: {it?.status}</span></td>; })}
               <td>{r.contact && <Link className="small" href={`/accounts/${r.account_id}/contacts/${r.contact_id}/mock`}>Practice again</Link>}</td>
             </tr>)}
           </tbody></table></div>

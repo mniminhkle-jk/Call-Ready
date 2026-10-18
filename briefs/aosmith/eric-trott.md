@@ -2,7 +2,7 @@
 Vice President of Global Supply Chain · A. O. Smith · Nashville, TN · in role since 2025-01  
 Account stage: **Research** · Brief reviewed: 2026-10-17
 
-**Contact:** A. O. Smith Water Products, Ashland City TN (division HQ): 866-362-9898 · A. O. Smith world HQ, Milwaukee: 414-359-4000 · Email: add from CRM · [LinkedIn](https://linkedin.com/in/erictrott)
+**Contact:** Phone: not on file · Email: not on file · [LinkedIn](https://linkedin.com/in/erictrott)
 
 > **Sharpest Signal** Steel costs rose 20% YoY in Q2 and squeezed North America margins, while the Groveport plant consolidates into Appleton and Haltom City. Eric is a former steel commodity manager now running global supply chain, and freight is a cost lever he can still pull. [2][3]
 >
