@@ -18,6 +18,6 @@ export const POST = handle(async req => {
   const vars = buildPersona(a, c, g, difficulty);
   const call = await createMockCall(vars, { account_id, contact_id, rep: user.username });
   await sb.from("mock_calls").insert({ call_id: call.call_id, account_id, contact_id, rep: user.name, goal: g, difficulty: difficulty || "busy", status: "registered" });
-  await logActivity(account_id, user.name, "Started mock call", `${vars.persona_name} · ${g}`, contact_id);
+  await logActivity(account_id, user.name, "Started practice call", `${vars.persona_name} · ${g}`, contact_id);
   return json({ call_id: call.call_id, access_token: call.access_token, transport: call.transport, ice_servers: call.ice_servers, persona: { name: vars.persona_name, title: vars.persona_title }, budget });
 });

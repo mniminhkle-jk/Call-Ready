@@ -32,10 +32,15 @@ export default function Search({ accounts }) {
         <div className="filters">
           <Select id="f-company" label="Company" value={company} onChange={setCompany} options={accounts.map(a => [a.id, a.name])} />
           <Select id="f-role" label="Position" value={role} onChange={setRole} options={ROLE_TYPES.map(r => [r, r])} />
-          <Select id="f-segment" label="Segment" value={segment} onChange={setSegment} options={["Manufacturer", "Distributor", "Retailer"].map(s => [s, s])} />
           <Select id="f-stage" label="Stage" value={stage} onChange={setStage} options={STAGES.map(s => [s, s])} />
-          <Select id="f-level" label="Criticality" value={level} onChange={setLevel} options={[["red", "Act now"], ["yellow", "This week"], ["green", "On track"]]} />
         </div>
+        <details className="more" open={!!(segment || level)}>
+          <summary>More filters</summary>
+          <div className="filters" style={{ marginTop: 8 }}>
+            <Select id="f-segment" label="Segment" value={segment} onChange={setSegment} options={["Manufacturer", "Distributor", "Retailer"].map(s => [s, s])} />
+            <Select id="f-level" label="Priority" value={level} onChange={setLevel} options={[["red", "Act now"], ["yellow", "This week"], ["green", "On track"]]} />
+          </div>
+        </details>
       </div>
       {companies.length > 0 && <section className="stack">
         <h2>Companies<span className="count" aria-live="polite">{companies.length}</span></h2>
@@ -43,7 +48,7 @@ export default function Search({ accounts }) {
           <Link key={a.id} href={`/accounts/${a.id}`} className="result">
             <div style={{ minWidth: 0 }} className="stack">
               <div className="row" style={{ gap: 8 }}><span className="title" style={{ fontSize: 17 }}>{a.name}</span><span className="small muted">{a.segment} · {a.hq} · {a.stage}</span></div>
-              <div className="small muted">{a.contacts.length} contacts</div>
+              <div className="small muted">{a.contacts.length} contacts{a.reason ? ` · ${a.reason}` : ""}</div>
             </div>
             <span className={`chip ${a.level}`} title={a.reason}>{a.label}</span>
           </Link>))}</div>
@@ -56,7 +61,7 @@ export default function Search({ accounts }) {
               <div className="title">{p.name || <span className="muted">Name not on file</span>} <span className="muted" style={{ fontWeight: 400 }}>· {p.title}</span></div>
               <div className="small muted">{p.account.name} · {p.role_type}{p.location ? ` · ${p.location}` : ""}</div>
             </div>
-            <div className="row" style={{ gap: 6 }}>{p.bestScore != null && <span className="pill">practice {p.bestScore}</span>}<span className="pill">{p.status}</span></div>
+            <span className="pill">{p.status}</span>
           </Link>))}</div>
       </section>}
       {!people.length && !companies.length && <div className="card muted">No matches. Try a different word or clear a filter. Can't find the company? <Link href="/new">Add it</Link>.</div>}

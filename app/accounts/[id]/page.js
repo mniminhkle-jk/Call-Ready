@@ -33,7 +33,8 @@ export default async function AccountPage({ params }) {
         </div>
         <div className="stack" style={{ alignItems: "flex-end", gap: 8 }}>
           <StageSelect id={a.id} stage={a.stage} />
-          <span className={`chip ${assessment.level}`} title={assessment.reasons.map(r => r.text).join(" ")}>{assessment.label}</span>
+          <span className={`chip ${assessment.level}`}>{assessment.label}</span>
+          {assessment.reasons[0] && <span className="small muted" style={{ maxWidth: 280, textAlign: "right" }}>{assessment.reasons[0].text}</span>}
         </div>
       </div>
 
@@ -41,8 +42,8 @@ export default async function AccountPage({ params }) {
         <div className="section-title"><h2 id="h-contacts">Contacts<span className="count">{contacts.length}</span></h2></div>
         <div className="people-grid">
           {contacts.map((c, i) => <Link key={c.id} href={`/accounts/${a.id}/contacts/${c.id}`} className="person-card" data-guide={i === 0 ? "first-contact" : undefined}>
-            <div className="row" style={{ gap: 10, flexWrap: "nowrap" }}><span className="avatar" aria-hidden="true">{initials(c.name || c.title)}</span><div style={{ minWidth: 0 }}><div className="nm">{c.name || "Name not on file"}</div><div className="small muted clamp1">{c.title}</div></div></div>
-            <div className="row" style={{ gap: 6 }}><span className="pill">{c.cs.label}</span>{c.bestScore != null && <span className="pill">Practice {c.bestScore}</span>}</div>
+            <div className="row" style={{ gap: 10, flexWrap: "nowrap" }}><span className="avatar" aria-hidden="true">{initials(c.name || c.title)}</span><div style={{ minWidth: 0 }}><div className="nm">{c.name || "Name not on file"}</div><div className="small muted clamp2">{c.title}</div></div></div>
+            <div className="row" style={{ gap: 6 }}><span className="pill">{c.cs.label}</span></div>
           </Link>)}
         </div>
         <AddContact accountId={a.id} />
@@ -52,6 +53,7 @@ export default async function AccountPage({ params }) {
         <div className="stack" style={{ gap: 16 }}>
           <section className="card" aria-labelledby="h-glance">
             <h2 id="h-glance">At a glance</h2>
+            {((a.phones || [])[0] || a.website) && <p className="small" style={{ margin: "0 0 10px" }}>{(a.phones || [])[0] && <>Main line <span className="mono">{a.phones[0].number}</span></>}{(a.phones || [])[0] && a.website && " · "}{a.website && <a href={a.website} target="_blank" rel="noreferrer">{a.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}</a>}</p>}
             <dl className="kv">{facts.slice(0, 4).map((f, i) => <Fragment key={i}><dt>{f.label}</dt><dd>{f.text} <Src n={f.src} /></dd></Fragment>)}</dl>
             <details className="more">
               <summary>More about {a.name}</summary>
@@ -60,30 +62,21 @@ export default async function AccountPage({ params }) {
                 {(b.freight || []).length > 0 && <div><h3>Freight</h3><dl className="kv">{b.freight.map((f, i) => <Fragment key={i}><dt>{f.label}</dt><dd>{f.text} <Src n={f.src} /></dd></Fragment>)}</dl></div>}
                 {(b.locations || []).length > 0 && <div><h3>Locations</h3><ul className="list">{b.locations.map((l, i) => <li key={i}>{l.text} <Src n={l.src} /></li>)}</ul></div>}
                 {(b.leadership || []).length > 0 && <div><h3>Leadership</h3><ul className="list">{b.leadership.map((l, i) => <li key={i}>{l.name}, {l.title} <Src n={l.src} /></li>)}</ul></div>}
+                {(b.address || (a.phones || []).length > 0) && <div><h3>Company lines</h3><dl className="kv">
+                  {b.address && <><dt>Address</dt><dd>{b.address}</dd></>}
+                  {(a.phones || []).map((p, i) => <Fragment key={i}><dt>{i === 0 ? "Phone" : ""}</dt><dd className="row" style={{ gap: 8 }}><span className="mono">{p.number}</span><span className="muted small">{p.label}</span><CopyButton text={p.number} label="Copy" className="btn ghost" /></dd></Fragment>)}
+                </dl></div>}
                 <div><h3>Sources</h3><ol className="small" style={{ margin: 0, paddingLeft: 20, display: "grid", gap: 4 }}>{(b.sources || []).map(s => <li key={s.n} value={s.n}><a href={s.url} target="_blank" rel="noreferrer">{s.title}</a> <span className="muted">({s.date})</span></li>)}</ol></div>
+                <MarkReviewed id={a.id} />
               </div>
             </details>
+            <div style={{ marginTop: 10 }}><AddFact id={a.id} /></div>
           </section>
 
-          <section className="card" aria-labelledby="h-company-contact">
-            <h2 id="h-company-contact">Company lines</h2>
-            <dl className="kv">
-              {b.address && <><dt>Address</dt><dd>{b.address}</dd></>}
-              {(a.phones || []).map((p, i) => <Fragment key={i}><dt>{i === 0 ? "Phone" : ""}</dt><dd className="row" style={{ gap: 8 }}><span className="mono">{p.number}</span><span className="muted small">{p.label}</span><CopyButton text={p.number} label="Copy" className="btn ghost" /></dd></Fragment>)}
-              {a.website && <><dt>Website</dt><dd><a href={a.website} target="_blank" rel="noreferrer">{a.website.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}</a></dd></>}
-            </dl>
-          </section>
-
-          <AddFact id={a.id} />
         </div>
         <aside className="stack" style={{ gap: 16 }}>
-          <section className="card stack" aria-labelledby="h-status">
-            <div className="section-title"><h2 id="h-status">Status</h2><span className={`chip ${assessment.level}`}>{assessment.label}</span></div>
-            <ul className="reasons">{assessment.reasons.length ? assessment.reasons.map((r, i) => <li key={i}>{r.text}</li>) : <li>Nothing flagged.</li>}</ul>
-            <MarkReviewed id={a.id} />
-          </section>
-          <ActivityFeed items={activity} deals={deals} />
           <SignalsPanel id={a.id} signals={signals} checkedAt={a.signals_checked_at} />
+          <ActivityFeed items={activity} deals={deals} />
         </aside>
       </div>
     </Shell>

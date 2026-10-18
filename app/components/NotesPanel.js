@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, fmtDateTime } from "./api";
 
@@ -24,6 +24,13 @@ export default function NotesPanel({ accountId, contacts, notes, stage, contactI
   const [gId, setGId] = useState(null);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const box = useRef(null);
+  // The "Log a call" button in the page header opens this form.
+  useEffect(() => {
+    const go = () => { setOpen(true); setTimeout(() => { box.current?.scrollIntoView({ block: "start" }); document.getElementById("n-purpose")?.focus(); }, 60); };
+    window.addEventListener("cr:log-call", go);
+    return () => window.removeEventListener("cr:log-call", go);
+  }, []);
   const setR = k => e => setF(s => ({ ...s, results: { ...s.results, [k]: e.target.value } }));
   const set = k => e => setF(s => ({ ...s, [k]: e.target.value }));
 
@@ -66,7 +73,7 @@ export default function NotesPanel({ accountId, contacts, notes, stage, contactI
   }
 
   return (
-    <section className="card stack">
+    <section className="card stack" ref={box}>
       <div className="card-head" style={{ marginBottom: 0 }}>
         <h2>Call notes</h2>
         <div className="row">

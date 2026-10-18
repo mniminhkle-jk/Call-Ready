@@ -7,7 +7,9 @@ import { fmtDate } from "./components/api";
 
 export const dynamic = "force-dynamic";
 const money = n => `$${Math.round(n).toLocaleString("en-US")}`;
-const firstSentence = t => (t || "").split(/(?<=[.!?])\s/)[0];
+// Split after a sentence end, but not after initials like "A. O. Smith".
+const firstSentence = t => (t || "").split(/(?<=(?:[a-z0-9%)]|[A-Z]{2})[.!?])\s+(?=[A-Z])/)[0];
+const DAY = 864e5;
 
 function Row({ x, cta, href, guide, chip }) {
   const { account: a, contact: c } = x;
@@ -23,9 +25,9 @@ function Row({ x, cta, href, guide, chip }) {
   );
 }
 
-function ActionList({ title, items, render, empty, max = 4 }) {
+function ActionList({ id, title, items, render, empty, max = 4 }) {
   return (
-    <section className="card" aria-labelledby={`h-${title}`}>
+    <section className="card" id={id} aria-labelledby={`h-${title}`}>
       <div className="section-title"><h2 id={`h-${title}`}>{title}<span className="count">{items.length}</span></h2></div>
       {items.length ? <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>{items.slice(0, max).map(render)}</ul> : <p className="muted small" style={{ margin: 0 }}>{empty}</p>}
       {items.length > max && <details className="more"><summary>Show {items.length - max} more</summary><ul style={{ listStyle: "none", margin: 0, padding: 0 }}>{items.slice(max).map(render)}</ul></details>}
@@ -40,6 +42,11 @@ export default async function Hub() {
   const [{ actions, accounts }, dash] = await Promise.all([hubData(), dashboardData()]);
   const me = dash.reps.find(r => r.id === user?.username) || dash.reps.find(r => r.name === user?.name);
   const reach = actions.reach.map(x => ({ ...x, short: firstSentence(x.contact.brief?.sharpest?.text) }));
+  const overdue = actions.follow.filter(f => f.rank >= 10).length;
+  // Newest company news per account, last 45 days: the reason to pick up the phone.
+  const news = accounts.map(a => ({ a, s: [...(a.signals || [])].filter(x => x.status !== "dismissed").sort((x, y) => new Date(y.published_at || 0) - new Date(x.published_at || 0))[0] }))
+    .filter(x => x.s && Date.now() - new Date(x.s.published_at || 0) < 45 * DAY)
+    .sort((x, y) => new Date(y.s.published_at) - new Date(x.s.published_at));
   return (
     <Shell user={user} active="/">
       <div className="hero">
@@ -49,23 +56,24 @@ export default async function Hub() {
 
       <div className="tiles">
         <Link href="/dashboards" className="tile" style={{ textDecoration: "none", color: "inherit" }}><span className="l">Quota, this month</span><span className="v">{me ? `${me.attainment}%` : "—"}</span><span className="s">{me ? `${money(me.margin)} of ${money(me.monthly_quota)}` : "No quota on file"}</span><div className="meter" aria-hidden="true"><span style={{ width: `${Math.min(100, me?.attainment || 0)}%` }} /></div></Link>
-        <div className="tile"><span className="l">To reach out</span><span className="v">{reach.length}</span><span className="s">contacts not reached yet</span></div>
-        <div className="tile"><span className="l">Follow-ups</span><span className="v">{actions.follow.length}</span><span className="s">{actions.follow.filter(f => f.rank >= 10).length ? `${actions.follow.filter(f => f.rank >= 10).length} overdue` : "none overdue"}</span></div>
+        <a href={actions.follow.length ? "#follow" : "#reach"} className="tile" style={{ textDecoration: "none", color: "inherit" }}><span className="l">Follow-ups</span><span className="v">{actions.follow.length}</span><span className="s">{overdue ? `${overdue} overdue` : actions.follow.length ? "none overdue" : "nothing due"}</span></a>
+        <a href="#reach" className="tile" style={{ textDecoration: "none", color: "inherit" }}><span className="l">New to reach</span><span className="v">{reach.length}</span><span className="s">not contacted yet</span></a>
       </div>
 
       <div className="grid-main">
         <div className="stack" style={{ gap: 16 }}>
-          <ActionList title="Reach out today" items={reach} empty="Everyone on your list has been contacted." render={(x, i) => <Row key={x.contact.id} x={x} guide={i === 0 ? "top-reach" : undefined} cta="Draft email" href={`/accounts/${x.account.id}/contacts/${x.contact.id}`} />} />
-          <ActionList title="Follow up" items={actions.follow} empty="No follow-ups due. Next steps from your call notes show up here." render={(x, i) => <Row key={i} x={x} cta="Open" href={`/accounts/${x.account.id}/contacts/${x.contact.id}`} chip={x.due ? <span className={`chip ${x.rank >= 10 ? "red" : "yellow"}`} style={{ marginTop: 4 }}>Due {x.due}</span> : null} />} />
-          <ActionList title="Practice before you call" items={actions.practice} max={3} empty="You've practiced with everyone on your list." render={(x, i) => <Row key={i} x={{ ...x, short: x.why }} cta="Practice" href={`/accounts/${x.account.id}/contacts/${x.contact.id}/mock`} />} />
+          {actions.follow.length > 0 && <ActionList id="follow" title="Follow up" items={actions.follow} render={(x, i) => <Row key={i} x={x} cta="Open" href={`/accounts/${x.account.id}/contacts/${x.contact.id}`} chip={x.due ? <span className={`chip ${x.rank >= 10 ? "red" : "yellow"}`} style={{ marginTop: 4 }}>Due {x.due}</span> : null} />} />}
+          <ActionList id="reach" title="Reach out today" items={reach} empty="Everyone on your list has been contacted." render={(x, i) => <Row key={x.contact.id} x={x} guide={i === 0 ? "top-reach" : undefined} cta="Draft email" href={`/accounts/${x.account.id}/contacts/${x.contact.id}?compose=email`} />} />
+          <ActionList id="practice" title="Practice before you call" items={actions.practice} max={3} empty="You've practiced with everyone on your list." render={(x, i) => <Row key={i} x={{ ...x, short: x.why }} cta="Practice" href={`/accounts/${x.account.id}/contacts/${x.contact.id}/mock`} />} />
         </div>
         <aside className="stack" style={{ gap: 16 }}>
-          <section className="card stack" aria-labelledby="h-watch">
-            <h2 id="h-watch">Accounts to watch</h2>
-            {accounts.map(a => <Link key={a.id} href={`/accounts/${a.id}`} className="result" style={{ padding: "10px 12px" }}>
-              <div style={{ minWidth: 0 }}><div className="title">{a.name}</div><div className="small muted clamp1">{a.assessment.reasons[0]?.text || "Nothing flagged"}</div></div>
-              <span className={`chip ${a.assessment.level}`}>{a.assessment.label}</span>
-            </Link>)}
+          <section className="card stack" aria-labelledby="h-news">
+            <h2 id="h-news">Reasons to call this week</h2>
+            {news.length ? <ul className="timeline small">{news.map(({ a, s }) => <li key={s.id}>
+              <Link href={`/accounts/${a.id}`} className="title" style={{ fontWeight: 600 }}>{a.name}</Link>
+              <div>{s.title}</div>
+              <div className="muted">{s.published_at ? fmtDate(s.published_at) : ""}</div>
+            </li>)}</ul> : <p className="muted small" style={{ margin: 0 }}>No new company news in the last 30 days.</p>}
           </section>
         </aside>
       </div>

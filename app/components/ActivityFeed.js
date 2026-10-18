@@ -14,7 +14,7 @@ export default function ActivityFeed({ items, deals = [], max = 8, showFilter = 
     <section className="card stack" aria-labelledby="h-activity">
       <div className="section-title"><h2 id="h-activity">{title}</h2></div>
       {open.map(d => <div key={d.id} className="small"><b>Open deal:</b> {d.name} · {d.stage} · ${Math.round(d.margin).toLocaleString("en-US")} est. margin</div>)}
-      {showFilter && <div className="row" role="group" aria-label="Filter activity" style={{ gap: 6 }}>{TYPES.map(([k, l]) => <button key={k} type="button" className={`chip plain${t === k ? " is-on" : ""}`} aria-pressed={t === k} onClick={() => setT(k)} style={{ cursor: "pointer", minHeight: 32, ...(t === k ? { background: "var(--btn)", color: "var(--btn-ink)", borderColor: "var(--btn)" } : {}) }}>{l}</button>)}</div>}
+      {showFilter && items.length > 5 && <div className="row" role="group" aria-label="Filter activity" style={{ gap: 6 }}>{TYPES.map(([k, l]) => <button key={k} type="button" className={`chip plain${t === k ? " is-on" : ""}`} aria-pressed={t === k} onClick={() => setT(k)} style={{ cursor: "pointer", minHeight: 32, ...(t === k ? { background: "var(--btn)", color: "var(--btn-ink)", borderColor: "var(--btn)" } : {}) }}>{l}</button>)}</div>}
       {list.length === 0 ? <p className="muted small" style={{ margin: 0 }}>Nothing here yet.</p> :
         <ul className="timeline small">{list.slice(0, max).map(x => <li key={x.id}>
           <div className="row" style={{ gap: 6 }}><span className={`src-chip ${x.source || "call_ready"}`}>{SRC[x.source] || "Call Ready"}</span><span className="muted">{fmtDateTime(x.created_at)}</span></div>

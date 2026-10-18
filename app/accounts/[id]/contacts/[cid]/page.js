@@ -7,6 +7,7 @@ import { ready, contactBundle } from "@/lib/data";
 import { connectOptions, buildEmail, buildLinkedIn } from "@/lib/crva";
 import { fmtDate } from "@/app/components/api";
 import Outreach from "@/app/components/Outreach";
+import LogCallButton from "@/app/components/LogCallButton";
 import NotesPanel from "@/app/components/NotesPanel";
 import Tabs from "@/app/components/Tabs";
 import ActivityFeed from "@/app/components/ActivityFeed";
@@ -32,7 +33,7 @@ export default async function ContactPage({ params }) {
   for (const o of options) for (const d of ["GET", "PAIN", "RISK"]) for (const k of ["meeting", "referral"]) drafts[`${o.id}|${d}|${k}`] = buildEmail(a, c, { connectId: o.id, driver: d, ask: k, senderName: user?.name });
   const li = Object.fromEntries(options.map(o => [o.id, buildLinkedIn(a, c, { connectId: o.id })]));
   const scored = myCalls.filter(m => m.score?.total != null);
-  const news = signals.filter(s => s.status !== "dismissed").slice(0, 3);
+  const news = signals.filter(s => s.status !== "dismissed").slice(0, 2);
   const openers = b.openers || [], questions = b.questions || [];
 
   return (
@@ -45,13 +46,13 @@ export default async function ContactPage({ params }) {
           <div style={{ minWidth: 0 }}>
             <h1>{c.name || "Name not on file"}</h1>
             <p className="sub">{c.title} · <Link href={`/accounts/${a.id}`}>{a.name}</Link></p>
-            <div className="row small" style={{ gap: 6, marginTop: 6 }}><span className="pill">{c.cs.label}</span>{c.location && <span className="muted">{c.location}</span>}{c.since && <span className="muted">· in role since {c.since.slice(0, 4)}</span>}</div>
+            <div className="row small" style={{ gap: 6, marginTop: 6 }}><span className="pill">{c.cs.label}</span>{c.location && <span className="muted">{c.location}</span>}{c.since && <span className="muted">· in role since {c.since.slice(0, 4)}</span>}<span className="muted" aria-hidden="true">·</span><a href={`/api/contacts/${c.id}/brief?format=docx`} data-guide="brief-docx">One-page brief (.docx)</a></div>
           </div>
         </div>
         <div className="actions-bar">
           <Outreach account={{ id: a.id, name: a.name }} contact={{ id: c.id, name: c.name, email: c.email, linkedin_url: c.linkedin_url, title: c.title }} options={options} drafts={drafts} li={li} />
+          <LogCallButton />
           <Link className="btn accent" href={`/accounts/${a.id}/contacts/${c.id}/mock`} data-guide="mock-call">Practice call</Link>
-          <a className="btn secondary" href={`/api/contacts/${c.id}/brief?format=docx`} data-guide="brief-docx">Brief (.docx)</a>
         </div>
       </div>
 
@@ -107,14 +108,13 @@ export default async function ContactPage({ params }) {
           ]} />
         </div>
         <aside className="stack" style={{ gap: 16 }}>
-          <section className="card" aria-labelledby="h-next">
+          <section className="card stack" aria-labelledby="h-next">
             <h2 id="h-next">Next steps</h2>
-            <ol className="list">{c.next.map((n, i) => <li key={i}>{n}</li>)}</ol>
-          </section>
-          <section className="card stack" aria-labelledby="h-practice">
-            <h2 id="h-practice">Practice</h2>
-            <p className="small" style={{ margin: 0 }}>{scored.length ? <>Best score <b>{Math.max(...scored.map(m => m.score.total))}/100</b> from {scored.length} practice call{scored.length === 1 ? "" : "s"}.</> : "Not practiced yet."}</p>
-            <Link className="btn accent" href={`/accounts/${a.id}/contacts/${c.id}/mock`} style={{ justifyContent: "center" }}>Practice call</Link>
+            <ol className="list" style={{ margin: 0 }}>{c.next.map((n, i) => <li key={i}>{n}</li>)}</ol>
+            <p className="small muted" style={{ margin: 0, borderTop: "1px dashed var(--line)", paddingTop: 10 }}>
+              {scored.length ? <>Practice: best <b style={{ color: "var(--ink)" }}>{Math.max(...scored.map(m => m.score.total))}/100</b> · {scored.length} call{scored.length === 1 ? "" : "s"} · </> : <>Not practiced yet · </>}
+              <Link href={`/accounts/${a.id}/contacts/${c.id}/mock`}>{scored.length ? "Practice again" : "Practice now"}</Link>
+            </p>
           </section>
           <section className="card stack" aria-labelledby="h-news">
             <h2 id="h-news">{a.name} updates</h2>

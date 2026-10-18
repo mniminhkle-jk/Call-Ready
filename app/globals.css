@@ -227,3 +227,23 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 3px s
 .note .kv { grid-template-columns: 110px minmax(0, 1fr); gap: 4px 10px; }
 
 [hidden] { display: none !important; }
+
+/* v4: rep walk-through fixes */
+.page { padding-bottom: 96px; } /* keep the last rows clear of the Guide button */
+@media (max-width: 640px) {
+  .topbar-in { gap: 8px 12px; padding-top: 8px; padding-bottom: 0; }
+  .topbar .mark { font-size: 18px; }
+  .who > span { display: none; }
+  .nav.tabs { order: 3; width: 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -4px; }
+  .nav.tabs::-webkit-scrollbar { display: none; }
+  .nav.tabs a { white-space: nowrap; padding: 8px 10px; font-size: 14px; }
+  .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .tile { padding: 10px; }
+  .tile .v { font-size: 24px; }
+  .tile .l { font-size: 10.5px; letter-spacing: .03em; }
+  .tile .s, .tile .meter { display: none; }
+  .contact-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contact-strip > div:last-child { grid-column: 1 / -1; }
+  .hero .actions-bar { width: 100%; }
+}
+[id] { scroll-margin-top: 76px; }

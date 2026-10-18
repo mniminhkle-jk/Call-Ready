@@ -7,7 +7,9 @@ export default function Tabs({ tabs, panels, initial = 0 }) {
   const refs = useRef([]);
   useEffect(() => {
     const fromHash = () => { const k = tabs.findIndex(t => `#${t.id}` === window.location.hash); if (k >= 0) setI(k); };
-    fromHash(); window.addEventListener("hashchange", fromHash); return () => window.removeEventListener("hashchange", fromHash);
+    const fromEvent = e => { const k = tabs.findIndex(t => t.id === e.detail); if (k >= 0) setI(k); };
+    fromHash(); window.addEventListener("hashchange", fromHash); window.addEventListener("cr:tab", fromEvent);
+    return () => { window.removeEventListener("hashchange", fromHash); window.removeEventListener("cr:tab", fromEvent); };
   }, [tabs]);
   const onKey = e => {
     const n = tabs.length; let k = null;

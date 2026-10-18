@@ -56,8 +56,6 @@ export default function MockCall({ accountId, contactId, goals, difficulty, chec
     catch (e) { setErr(e.message); }
   }
 
-  const used = budget ? budget.spent + budget.pending : 0;
-  const pct = Math.min(100, Math.round((used / budgetCap) * 100));
 
   return (
     <div className="stack" style={{ gap: 16 }}>
@@ -67,11 +65,7 @@ export default function MockCall({ accountId, contactId, goals, difficulty, chec
           <div><label htmlFor="m-goal">Goal of the call</label><select id="m-goal" value={goal} onChange={e => setGoal(e.target.value)} disabled={phase === "live" || phase === "connecting"}>{goals.map(g => <option key={g}>{g}</option>)}</select></div>
           <div><label htmlFor="m-diff">Prospect mood</label><select id="m-diff" value={diff} onChange={e => setDiff(e.target.value)} disabled={phase === "live" || phase === "connecting"}>{difficulty.map(([k, v]) => <option key={k} value={k}>{v.split(":")[0]}</option>)}</select></div>
         </div>
-        <div className="stack small" style={{ gap: 6 }}>
-          <div className="row spread"><span>Mock-call credit used: <b className="mono">${(used / 100).toFixed(2)}</b> of <span className="mono">${(budgetCap / 100).toFixed(2)}</span> cap</span></div>
-          <div className="meter" aria-hidden><span style={{ width: `${pct}%`, background: pct > 85 ? "var(--err)" : pct > 60 ? "var(--warn)" : "var(--ok)" }} /></div>
-          
-        </div>
+        {budget && !budget.canStart && <div className="notice small">Voice practice is paused: the team's practice budget is used up. Use written practice below; it's scored the same way.</div>}
         {err && <div className="notice err small" role="alert">{err}</div>}
         <div className="row">
           {phase !== "live" && <button className="btn accent" onClick={start} disabled={phase === "connecting" || phase === "scoring" || (budget && !budget.canStart)}>{phase === "connecting" ? "Connecting…" : phase === "scoring" ? "Scoring…" : "Start voice call"}</button>}

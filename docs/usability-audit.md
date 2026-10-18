@@ -18,6 +18,34 @@ Method: page-by-page review of the built app in demo mode (Playwright screenshot
 | Search counts | Companies/People counts didn't follow filters (A. O. Smith showed "12 people", "3 companies") | Counts are computed from the filtered list; aria-live announces them | Counts must match what's on screen. |
 | Sample labels | "(sample)" badges throughout | Removed from the UI; rows keep `is_sample` in the database | Data reads as it will once pulled from the CRM. |
 
+## Rep walk-through (2026-10-18)
+
+Each element was checked as a rep would: "Does this help me?" and "Would I need it in a 3-second glance?" If not, it moved lower or behind a click. No data was removed.
+
+| Page | Problem | Change |
+|---|---|---|
+| Main Hub | A "why" line read just "A." (the sentence split broke on "A. O. Smith") | Sentence split skips initials and state codes |
+| Main Hub | "Follow up" sat below new outreach and showed an empty box | Follow-ups come first when something is due; the empty card is hidden |
+| Main Hub | "Draft email" opened the profile, not a draft | It opens the profile with the email draft already open |
+| Main Hub | "Accounts to watch" said "No one has contacted thi…" three times | Replaced with "Reasons to call this week": the newest company news per account |
+| Main Hub | Tiles weren't clickable | Follow-ups and New to reach jump to their lists |
+| Accounts | Five filters up front; Segment and Criticality rarely used | Company, Position, Stage shown; Segment and Priority under "More filters" |
+| Accounts | Practice score pill on every contact | Removed from search; status stays. Company rows show why they're flagged |
+| Company | Status card repeated the chip in the header | Removed; the main reason sits under the chip |
+| Company | Titles cut off on contact cards; practice pill | Full title (2 lines), status only |
+| Company | Company news at the bottom of the side column | Moved to the top of the side column, above Activity |
+| Company | "Company lines" card took space for a switchboard number | Main line and website on one line in At a glance; address and all lines under "More about" |
+| Company | "Mark profile reviewed" in the first screen | Moved under "More about" |
+| Person | No quick way to log a call after hanging up | "Log a call" in the header opens the Notes tab with the form ready |
+| Person | "Brief (.docx)" took a header button | Text link next to location and tenure |
+| Person | "Practice call" twice (header and side card) | One button in the header; score and "Practice again" link under Next steps |
+| Person | "Last contact: Not on file" | "Never" |
+| All | Activity filters showed for 0–2 items | Filters appear only with more than 5 items |
+| Practice call | Budget meter ($0.00 of $9.00) shown to reps | Hidden; a notice appears only if voice practice is paused. Renamed "Mock call" to "Practice call" |
+| Training | Team stats first | "Your practice": your average, your weakest move, who to practice next; team stats behind a click |
+| Dashboards | "Are we hitting quota?" led with team totals | "Am I on pace?": your quota vs pace, still to close, your pipeline, your open deals; team charts below, your row highlighted |
+| Mobile | Header used 200 px; tiles filled the first screen | One-row scrolling nav, name hidden, tiles three across |
+
 ## Accessibility findings
 
 ### Perceivable

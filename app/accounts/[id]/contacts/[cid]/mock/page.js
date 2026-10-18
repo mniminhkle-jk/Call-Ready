@@ -22,9 +22,9 @@ export default async function MockPage({ params }) {
   const p = { ...(c.brief?.persona || {}), cares: c.brief?.cares || [] };
   return (
     <Shell user={user} active="/training">
-      <div className="row small"><Link href={`/accounts/${a.id}`}>{a.name}</Link><span className="muted">/</span><Link href={`/accounts/${a.id}/contacts/${c.id}`}>{c.name || c.title}</Link><span className="muted">/</span><span>Mock call</span></div>
+      <nav aria-label="Breadcrumb" className="row small"><Link href="/accounts">Accounts</Link><span className="muted" aria-hidden="true">/</span><Link href={`/accounts/${a.id}`}>{a.name}</Link><span className="muted" aria-hidden="true">/</span><Link href={`/accounts/${a.id}/contacts/${c.id}`}>{c.name || c.title}</Link><span className="muted" aria-hidden="true">/</span><span aria-current="page">Practice call</span></nav>
       <div className="stack" style={{ gap: 4 }}>
-        <div className="eyebrow">Mock call · {a.name}</div>
+        <div className="eyebrow">Practice call · {a.name}</div>
         <h1>Practice the call before you dial</h1>
         <p className="muted" style={{ margin: 0 }}>You'll talk to an AI version of <b>{c.name || c.title}</b> ({c.title.replace(/\s*\(.*\)\s*$/, "")}), built from their brief. Calls stop at {MAX_CALL_MS / 60000} minutes.</p>
       </div>
@@ -32,7 +32,7 @@ export default async function MockPage({ params }) {
         <MockCall accountId={a.id} contactId={c.id} goals={GOALS} difficulty={Object.entries(DIFFICULTY)} checklist={callChecklist(c)} rubric={RUBRIC.map(({ id, part, label, points, test }) => ({ id, part, label, points, test }))} budgetCap={BUDGET_CENTS} model={RETELL_MODEL} />
         <aside className="stack" style={{ gap: 16 }}>
           <section className="card stack small">
-            <h2>The persona</h2>
+            <h2>What to expect from {(c.name || "them").split(" ")[0]}</h2>
             <div><b>What they care about:</b> {(p.cares || []).join(", ")}</div>
             <div><b>Pushback to expect:</b><ul className="list">{(p.objections || []).map((o, i) => <li key={i}>“{o}”</li>)}</ul></div>
             <div><b>Value to us:</b> {p.valueToUs}</div>

@@ -25,6 +25,13 @@ export default function Outreach({ account, contact, options, drafts, li }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [mode]);
+  // Main Hub "Draft email" links here with ?compose=email so the draft opens right away.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("compose");
+    if (q === "email") openEmail(); else if (q === "linkedin") openLi();
+    if (q) window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   function closeModal() { setMode(null); setTimeout(() => opener.current?.focus(), 0); }
 
   function openEmail() { setBody(d.body); setSubject(d.subject); setMode("email"); setMsg(""); api("/api/activity", "POST", { account_id: account.id, contact_id: contact.id, kind: "email-drafted", detail: contact.name || contact.title }).catch(() => {}); }

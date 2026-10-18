@@ -31,7 +31,7 @@ export function ContactStrip({ contact: c, lastTouch }) {
       <div><div className="k">Phone</div><div className="v">{c.phone ? <span className="row" style={{ gap: 4 }}><a className="mono" href={`tel:${c.phone}`}>{c.phone}</a><CopyButton text={c.phone} label="Copy" className="btn ghost" /></span> : <Empty />}</div></div>
       <div><div className="k">Email</div><div className="v">{c.email ? <span className="row" style={{ gap: 4 }}><span className="mono">{c.email}</span><CopyButton text={c.email} label="Copy" className="btn ghost" /></span> : <Empty />}</div></div>
       <div><div className="k">LinkedIn</div><div className="v">{c.linkedin_url ? <a href={c.linkedin_url} target="_blank" rel="noreferrer">View profile</a> : <Empty />}</div></div>
-      <div><div className="k">Last contact</div><div className="v">{lastTouch ? fmtDate(lastTouch) : <Empty />}</div></div>
+      <div><div className="k">Last contact</div><div className="v">{lastTouch ? fmtDate(lastTouch) : <span className="empty-val">Never</span>}</div></div>
       <div style={{ alignSelf: "center" }}><button type="button" className="btn secondary" onClick={() => setEdit(true)} data-guide="edit-contact">{c.phone || c.email ? "Edit" : "Add phone or email"}</button></div>
     </div>
   );
